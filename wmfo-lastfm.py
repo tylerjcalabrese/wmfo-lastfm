@@ -48,12 +48,15 @@ def rows_from_schedule(show):
     time.sleep(1)
 
     # open the page for the show
-    xpathstr = "//div[text()='" + show + "']"
+    if "'" in show:
+        xpathstr = '//div[text()="' + show + '"]'
+    else:
+        xpathstr = "//div[text()='" + show + "']"
     try:
         showtitle = driver.find_element(By.XPATH, xpathstr)
     except NoSuchElementException:
         print('Show not found. Please check spelling and remember that',
-              'show titles with apostrophes are not yet supported.')
+              'show titles with both quotes and apostrophes are yet supported.')
         return []
     showbutton = showtitle.find_element(By.XPATH, "./ancestor::A")
     showbutton.click()

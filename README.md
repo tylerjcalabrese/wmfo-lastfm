@@ -16,5 +16,3 @@ Does not support scrobbling shows from the previous week, i.e. the
 installment of the show you want to scrobble should appear right away
 when you open www.wmfo.org/schedule.
 
-TODO: Support show names with apostrophes (especially given my show's
-title has one!)
