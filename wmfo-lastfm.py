@@ -24,13 +24,39 @@ from dotenv import load_dotenv
 
 import pylast
 
-url = 'https://www.wmfo.org'
 
-def rows_from_url(url):
+def rows_from_homepage():
+    url = 'https://www.wmfo.org'
     firefoxOptions = webdriver.FirefoxOptions()
     firefoxOptions.add_argument("--headless")
     driver = webdriver.Firefox(options=firefoxOptions)
     driver.get(url)
+
+    return driver.find_elements(By.XPATH, '//tr')
+
+
+def rows_from_schedule(show):
+    url = "https://widgets.spinitron.com/widget/schedule?station=wmfo"
+    firefoxOptions = webdriver.FirefoxOptions()
+    firefoxOptions.add_argument("--headless")
+    driver = webdriver.Firefox(options=firefoxOptions)
+    driver.get(url)
+
+    # TODO: find a better way to wait for jQuery
+    time.sleep(1)
+
+
+    # open the page for the show
+    xpathstr = "//div[text()='" + show + "']"
+    print(xpathstr)
+    try:
+        showtitle = driver.find_element(By.XPATH, xpathstr)
+    except NoSuchElementException:
+        print('Show not found. Please check spelling and remember that',
+              'show titles with apostrophes are not yet supported.')
+        return []
+    showbutton = showtitle.find_element(By.XPATH, "./ancestor::A")
+    showbutton.click()
 
     return driver.find_elements(By.XPATH, '//tr')
 
@@ -85,8 +111,15 @@ def setup_lastfm():
 
 
 def main():
-    print("getting songs from", url)
-    rows = rows_from_url(url)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--from-schedule",
+                        help="scrobble from a show on the schedule")
+    args = parser.parse_args()
+    if args.from_schedule:
+        print(args.from_schedule)
+        rows = rows_from_schedule(args.from_schedule)
+    else:
+        rows = rows_from_homepage()
 
     tracks = list(map(extract_track, rows))
 
