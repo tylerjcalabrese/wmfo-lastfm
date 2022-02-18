@@ -20,6 +20,8 @@ from dateutil.parser import parse
 from datetime import *
 import time
 
+from itertools import repeat
+
 from dotenv import load_dotenv
 
 import pylast
@@ -45,10 +47,8 @@ def rows_from_schedule(show):
     # TODO: find a better way to wait for jQuery
     time.sleep(1)
 
-
     # open the page for the show
     xpathstr = "//div[text()='" + show + "']"
-    print(xpathstr)
     try:
         showtitle = driver.find_element(By.XPATH, xpathstr)
     except NoSuchElementException:
@@ -62,9 +62,10 @@ def rows_from_schedule(show):
 
 
 # track should be a table row element
-def extract_track(track):
+def extract_track(track, datestr):
     spintimestr = track.find_element(By.XPATH, './/td[@class="spin-time"]/a').text
-    spintime = parse(spintimestr, default=datetime.now())
+    spintime = parse(datestr, default=datetime.now())
+    spintime = parse(spintimestr, default=spintime)
     spinunixtime = int(spintime.timestamp())
 
     artist = track.find_element(By.XPATH, './/span[@class="artist"]').text
@@ -114,14 +115,16 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--from-schedule",
                         help="scrobble from a show on the schedule")
+    parser.add_argument("--date",
+        help="change the date scrobbles are registered under. yyyy-mm-dd")
     args = parser.parse_args()
     if args.from_schedule:
-        print(args.from_schedule)
         rows = rows_from_schedule(args.from_schedule)
     else:
         rows = rows_from_homepage()
+    if not args.date: args.date = ''
 
-    tracks = list(map(extract_track, rows))
+    tracks = list(map(extract_track, rows, repeat(args.date)))
 
     promptstr =  "found " + str(len(tracks)) + " tracks. "
     promptstr += "s to scrobble all, p to pick tracks to scrobble, "

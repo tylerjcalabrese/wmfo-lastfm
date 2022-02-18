@@ -9,7 +9,12 @@ User will need their own last.fm API account (key and secret). Please
 create a .env file with 'API_KEY', 'API_SECRET', 'USERNAME', and 
 'HASHED_PASS' before running the application.
 
-My next goal is to allow scrobbling a show on the current week's
-schedule as an alternative to just the WMFO homepage. So, after listening
-to a WMFO show in its entirety, users could conveniently scrobble all of
-the songs played.
+To scrobble a previous show's playlist, supply the optional
+--from-schedule argument with the show's name, and if it was on a
+different day of the week, the --date argument with the date.
+Does not support scrobbling shows from the previous week, i.e. the
+installment of the show you want to scrobble should appear right away
+when you open www.wmfo.org/schedule.
+
+TODO: Support show names with apostrophes (especially given my show's
+title has one!)
