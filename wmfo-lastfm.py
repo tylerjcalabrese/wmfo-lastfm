@@ -61,14 +61,17 @@ def rows_from_schedule(show):
     showbutton = showtitle.find_element(By.XPATH, "./ancestor::A")
     showbutton.click()
 
+    rows = driver.find_elements(By.XPATH, '//tr')
+    if len(rows) == 0 or rows[0].text == 'This playlist has no spins (yet).':
+        return []
     return driver.find_elements(By.XPATH, '//tr')
 
 
 # track should be a table row element
 def extract_track(track, datestr):
     spintimestr = track.find_element(By.XPATH, './/td[@class="spin-time"]/a').text
-    spintime = parse(datestr, default=datetime.now())
-    spintime = parse(spintimestr, default=spintime)
+    spintime = parse(spintimestr, default=datetime.now())
+    if datestr != '': spintime = parse(datestr, default=spintime)
     spinunixtime = int(spintime.timestamp())
 
     artist = track.find_element(By.XPATH, './/span[@class="artist"]').text
