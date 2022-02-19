@@ -2,15 +2,11 @@
 # A web scraper for scrobbling WMFO shows to last.fm
 # By Tyler Calabrese
 
-# Notes: You will need your last.fm API key and username in 
-
-# Used GeeksforGeeks Scrape Tables From any website using Python
+# Notes: You will need your last.fm API key and secret, as well as
+# username and password md5 hash, in a .env file
 
 import argparse
-import sys, os
-from pprint import pprint
-from html_table_parser.parser import HTMLTableParser
-import pandas as pd
+import os
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
