@@ -27,8 +27,7 @@ from dotenv import load_dotenv
 import pylast
 
 
-def rows_from_homepage():
-    url = 'https://www.wmfo.org'
+def rows_from_url(url):
     firefoxOptions = webdriver.FirefoxOptions()
     firefoxOptions.add_argument("--headless")
     driver = webdriver.Firefox(options=firefoxOptions)
@@ -37,8 +36,8 @@ def rows_from_homepage():
     return driver.find_elements(By.XPATH, '//tr')
 
 
-def rows_from_schedule(show):
-    url = "https://widgets.spinitron.com/widget/schedule?station=wmfo"
+def rows_from_schedule(show, station):
+    url = "https://widgets.spinitron.com/widget/schedule?station=" + station.lower()
     firefoxOptions = webdriver.FirefoxOptions()
     firefoxOptions.add_argument("--headless")
     driver = webdriver.Firefox(options=firefoxOptions)
@@ -123,11 +122,18 @@ def main():
                         help="scrobble from a show on the schedule")
     parser.add_argument("--date",
         help="change the date scrobbles are registered under. yyyy-mm-dd")
+    parser.add_argument("--station", default="WMFO",
+        help="for use with from-schedule. Specify a Spinitron station whose schedule to read.")
+    parser.add_argument("--playlist-url",
+        help="manually specify the URL of a Spinitron playlist instead of reading from a schedule or homepage.")
     args = parser.parse_args()
-    if args.from_schedule:
-        rows = rows_from_schedule(args.from_schedule)
+    if args.playlist_url:
+        rows = rows_from_url(args.playlist_url)
+    elif args.from_schedule:
+        rows = rows_from_schedule(args.from_schedule, args.station)
     else:
-        rows = rows_from_homepage()
+        homepage_url = "https://www." + args.station.lower() + ".org"
+        rows = rows_from_url(homepage_url)
     if not args.date: args.date = ''
 
     tracks = list(map(extract_track, rows, repeat(args.date)))
