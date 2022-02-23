@@ -1,4 +1,4 @@
-# !/usr/bin/python
+#!/usr/local/bin/python3
 # A web scraper for scrobbling WMFO shows to last.fm
 # By Tyler Calabrese
 
